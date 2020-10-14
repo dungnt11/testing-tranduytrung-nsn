@@ -5,6 +5,7 @@ const input = [
   { name: 'Không nhập tìm kiếm', value: '' },
   { name: 'Nhập dấu cách', value: ' ' },
   { name: 'Nhập 1 kí tự lạ tìm kiếm', value: '#' },
+  { name: 'Nhập 1 chữ cái tìm kiếm', value: 'a' },
   { name: 'Nhập nhiều chữ cái rời nhau', value: 'A í ã' },
   { name: 'Nhập đủ mã sản phẩm', value: 'A20K.013' },
 ];
@@ -27,20 +28,14 @@ const input = [
   
       await page.click('button[type="submit"]');
       await page.waitForTimeout(1000);
-      await page.screenshot({ path: `__test__/searchScreenshot/${name}.png` });
-      const productOfPage = await page.evaluate(() => {
-        const productFindByValue = document.querySelectorAll('.phu-kien');
-        if (!productFindByValue) return 'Not query product !';
-        if (!productFindByValue[0]) return 'Not found product!';
-        const result = productFindByValue[0].childElementCount;
-        if (result > 0) {
-          return `Find ${result} products`;
-        } else {
-          return 'Not found product!';
-        }
-      });
-  
-      console.log(productOfPage); 
+      const productOfPage = await page.evaluate((valueItem) => {
+        const productFindByValue = document.querySelectorAll('.products-container')[0];
+        if (window.location.pathname === '/') return 'Không tìm kiếm';
+        if (!productFindByValue) return 'Tìm kiếm không ra kết quả';
+        const titleQuery = Array.from(productFindByValue.querySelectorAll('.lt-product-group-info h3')).map((item) => item.innerHTML);
+        return titleQuery.every((item) => item.includes(valueItem) || item.includes(valueItem.toUpperCase())) ? `Tìm thấy sản phầm có chữ ${valueItem}` : 'Tìm kiếm không ra kết quả';;
+      }, value)
+      console.log(productOfPage);
     }
 
     await browser.close();
