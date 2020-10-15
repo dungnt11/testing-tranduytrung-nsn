@@ -2,12 +2,12 @@ const playwright = require('playwright');
 const URL_TESTING = 'https://cellphones.com.vn/';
 
 const input = [
-  { name: 'Không nhập tìm kiếm', value: '' },
-  { name: 'Nhập dấu cách', value: ' ' },
-  { name: 'Nhập 1 kí tự lạ tìm kiếm', value: '#' },
-  { name: 'Nhập 1 chữ cái tìm kiếm', value: 'a' },
-  { name: 'Nhập nhiều chữ cái rời nhau', value: 'A í ã' },
-  { name: 'Nhập đủ mã sản phẩm', value: 'A20K.013' },
+  { name: 'Không nhập tìm kiếm', value: '', result: 'Không tìm kiếm' },
+  { name: 'Nhập dấu cách', value: ' ', result: 'Tìm kiếm không ra kết quả' },
+  { name: 'Nhập 1 kí tự lạ tìm kiếm', value: '#', result: 'Tìm kiếm không ra kết quả' },
+  { name: 'Nhập 1 chữ cái tìm kiếm', value: 'a', result: 'Tìm thấy sản phầm có chữ a' },
+  { name: 'Nhập nhiều chữ cái rời nhau', value: 'A í ã', result: 'Tìm kiếm không ra kết quả' },
+  { name: 'Nhập đủ mã sản phẩm', value: 'A20K.013', result: 'Tìm thấy sản phầm có mã A20K.013' },
 ];
 
 (async () => {
@@ -18,7 +18,7 @@ const input = [
     await page.goto(URL_TESTING);
 
     for (const inputItem of input) {
-      const { name, value } = inputItem;
+      const { name, value, result } = inputItem;
       console.log(`Find search by ${name}`);
       await page.evaluate(async (valueItem) => {
         const searchID = document.querySelector('#search');
@@ -35,7 +35,9 @@ const input = [
         const titleQuery = Array.from(productFindByValue.querySelectorAll('.lt-product-group-info h3')).map((item) => item.innerHTML);
         return titleQuery.every((item) => item.includes(valueItem) || item.includes(valueItem.toUpperCase())) ? `Tìm thấy sản phầm có chữ ${valueItem}` : 'Tìm kiếm không ra kết quả';;
       }, value)
-      console.log(productOfPage);
+
+      if (productOfPage === result) console.log(`Pass: ${productOfPage}`);
+      else console.log(`FAIL: ${productOfPage}`);
     }
 
     await browser.close();
