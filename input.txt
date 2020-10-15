@@ -1,0 +1,6 @@
+Pass: Không tìm kiếm
+Pass: Tìm kiếm không ra kết quả
+Pass: Tìm kiếm không ra kết quả
+Pass: Tìm thấy sản phầm có chữ a
+Pass: Tìm kiếm không ra kết quả
+FAIL: Tìm kiếm không ra kết quả

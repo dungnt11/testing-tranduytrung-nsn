@@ -1,4 +1,5 @@
 const playwright = require('playwright');
+const fs = require('fs');
 const URL_TESTING = 'https://cellphones.com.vn/';
 
 const input = [
@@ -16,6 +17,8 @@ const input = [
     const context = await browser.newContext();
     const page = await context.newPage();
     await page.goto(URL_TESTING);
+
+    let contentFinal = '';
 
     for (const inputItem of input) {
       const { name, value, result } = inputItem;
@@ -36,10 +39,17 @@ const input = [
         return titleQuery.every((item) => item.includes(valueItem) || item.includes(valueItem.toUpperCase())) ? `Tìm thấy sản phầm có chữ ${valueItem}` : 'Tìm kiếm không ra kết quả';;
       }, value)
 
-      if (productOfPage === result) console.log(`Pass: ${productOfPage}`);
-      else console.log(`FAIL: ${productOfPage}`);
+      if (productOfPage === result) {
+        const content = `Pass: ${productOfPage}`;
+        console.log(content);
+        contentFinal += `${content}\n`;
+      } else {
+        const content = `FAIL: ${productOfPage}`;
+        console.log(content);
+        contentFinal += `${content}\n`;
+      };
     }
-
+    fs.writeFileSync('./input.txt', contentFinal);
     await browser.close();
   } catch (error) {
     console.error(error);    
